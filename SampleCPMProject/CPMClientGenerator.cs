@@ -15,13 +15,15 @@
             ServicePointManager.ServerCertificateValidationCallback += (a, b, c, d) => true;
             AuthenticationContext authenticationContext = new AuthenticationContext(string.Concat(AadInstance, TenantId));
             ClientCredential credential = new ClientCredential(ClientId, ClientSecret);
-            AuthenticationResult authenticationResult = authenticationContext.AcquireTokenAsync(ClientId, credential).Result;
+            AuthenticationResult authenticationResult = authenticationContext.AcquireTokenAsync(AppResourceId, credential).Result;
             return authenticationResult.AccessToken;
         }, true);
 
         private static string AadInstance => ConfigurationManager.AppSettings["AadInstance"];
 
         private static string AadToken => aadTokenField.Value;
+
+        private static string AppResourceId => ConfigurationManager.AppSettings["AppResourceId"];
 
         private static Uri BaseUrl => new Uri(ConfigurationManager.AppSettings["BaseUrl"]);
 
