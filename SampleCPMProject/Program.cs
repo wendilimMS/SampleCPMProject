@@ -53,24 +53,20 @@ namespace SampleCPMProject
         {
             using (HttpClient client = await CPMClientGenerator.CreateHttpClientAsync())
             {
-                HttpResponseMessage message = await client.GetAsync("api/Topics");
-                if (message.IsSuccessStatusCode)
-                {
-                    HttpMethod get = new HttpMethod("GET");
-                    HttpRequestMessage request = new HttpRequestMessage(get, "api/ContactPoints");
-                    request.Headers.Add("x-ms-contact-value", contactPointValue);
-                    request.Headers.Add("x-ms-contact-type", contactPointType.ToString());
-                    request.Headers.Add("Accept", "application/json");
-                    HttpResponseMessage response = await client.SendAsync(request);
+                HttpMethod get = new HttpMethod("GET");
+                HttpRequestMessage request = new HttpRequestMessage(get, "api/ContactPoints");
+                request.Headers.Add("x-ms-contact-value", contactPointValue);
+                request.Headers.Add("x-ms-contact-type", contactPointType.ToString());
+                request.Headers.Add("Accept", "application/json");
+                HttpResponseMessage response = await client.SendAsync(request);
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        LookupContactPoint contactPoint = await response.Content.ReadAsAsync<LookupContactPoint>();
-                        Console.WriteLine(JsonConvert.SerializeObject(contactPoint));
-                        Console.ReadKey();
-                    }
+                if (response.IsSuccessStatusCode)
+                {
+                    LookupContactPoint contactPoint = await response.Content.ReadAsAsync<LookupContactPoint>();
+                    Console.WriteLine(JsonConvert.SerializeObject(contactPoint));
+                    Console.ReadKey();
                 }
-            }
+            }            
         }
 
         /// <summary>

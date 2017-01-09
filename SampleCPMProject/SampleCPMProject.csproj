@@ -35,7 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0f1b262fe45944e2, processorArchitecture=MSIL">
-      <HintPath>..\packages\Contracts.1.0.0-rtm-20161118\lib\netstandard1.3\Contracts.dll</HintPath>
+      <HintPath>..\packages\Contracts.1.0.0-rtm-20170105\lib\netstandard1.3\Contracts.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=2.28.2.795, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
