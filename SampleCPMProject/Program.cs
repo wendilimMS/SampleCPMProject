@@ -1,12 +1,13 @@
-﻿using Microsoft.CustomerPreferences.Api.Contracts;
-using Newtonsoft.Json;
-using System;
-using System.Globalization;
-using System.Net.Http;
-using System.Threading.Tasks;
-
-namespace SampleCPMProject
+﻿namespace SampleCPMProject
 {
+    using Microsoft.CustomerPreferences.Api.Contracts;
+    using Newtonsoft.Json;
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+
     public class Program
     {
         // swap out the methods to test out each functionality
@@ -17,30 +18,46 @@ namespace SampleCPMProject
             {
                 await PatchContactPoint(ContactPointType.Email, "test@microsoft.com", new Guid("00000000-0000-0000-0000-000000000001"), ContactPointTopicSettingState.OptInExplicit);
             }).Wait();
+            Console.ReadKey();
         }
 
         /// <summary>
-        ///  Does a soft delete of a contact point by marking them as 'inactive'.
+        /// Given a list of contact values and a particular topic id (or the keyword "transactional"), check if those contact values
+        /// can be contacted by the topic id.
+        /// This end point is pessimistic, in that if CPM does not know about the contact value or if the contact value does not know about the topic,
+        /// the "CanContact" value will always return false.
         /// </summary>
-        /// <param name="contactPointType">The type of contact point to delete eg. email</param>
-        /// <param name="contactPointValue">The actual value of the contact point eg. email@address.com</param>
+        /// <param name="contactValues">The list of contact values to check. Maximum size 100.</param>
+        /// <param name="contactPointType">The type of contact point to check.</param>
+        /// <param name="topicId">The topic id, or the keyword "transactional".</param>
         /// <returns></returns>
-        private static async Task DeleteContactPoint(ContactPointType contactPointType, string contactPointValue)
+        private static async Task GetContactabilities(List<string> contactValues, ContactPointType contactPointType, string topicId)
         {
+            CheckContactabilitiesRequest2 request = new CheckContactabilitiesRequest2()
+            {
+                ContactType = contactPointType,
+                TargetedTopic = topicId
+            };
+
+            foreach (string contactValue in contactValues)
+            {
+                request.ContactPoints.Add(contactValue);
+            }
+
             using (HttpClient client = await CPMClientGenerator.CreateHttpClientAsync())
             {
-                ContactPointIdentity contactPointIdentity = new ContactPointIdentity
-                {
-                    ContactType = contactPointType,
-                    ContactValue = contactPointValue
-                };
-                HttpResponseMessage response = await client.DeleteAsync("api/ContactPoints", contactPointIdentity);
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/contactabilities?api-version=2.0", request);
+
                 if (response.IsSuccessStatusCode)
                 {
-                    Console.WriteLine("Contact point successfully deleted");
-                    Console.ReadKey();
+                    CheckContactabilitiesResult2 result = await response.Content.ReadAsAsync<CheckContactabilitiesResult2>();
+                    Console.WriteLine(JsonConvert.SerializeObject(result));
                 }
-            }                
+                else
+                {
+                    Console.WriteLine(await response.Content.ReadAsStringAsync());
+                }
+            }
         }
 
         /// <summary>
@@ -64,9 +81,12 @@ namespace SampleCPMProject
                 {
                     LookupContactPoint contactPoint = await response.Content.ReadAsAsync<LookupContactPoint>();
                     Console.WriteLine(JsonConvert.SerializeObject(contactPoint));
-                    Console.ReadKey();
+                } 
+                else
+                {
+                    Console.WriteLine(await response.Content.ReadAsStringAsync());
                 }
-            }            
+            }
         }
 
         /// <summary>
@@ -79,27 +99,29 @@ namespace SampleCPMProject
         /// <returns></returns>
         private static async Task PatchContactPoint(ContactPointType contactPointType, string contactPointValue, Guid topicId, ContactPointTopicSettingState state)
         {
+            ContactPoint contactPoint = new ContactPoint()
+            {
+                ContactType = contactPointType,
+                ContactValue = contactPointValue
+            };
+            contactPoint.TopicSettings.Add(new ContactPointTopicSetting
+            {
+                TopicId = topicId,
+                CultureName = CultureInfo.CurrentCulture.ToString(),
+                LastSourceSetDate = DateTime.UtcNow,
+                OriginalSource = "SampleCPMProject",
+                State = state
+            });
             using (HttpClient client = await CPMClientGenerator.CreateHttpClientAsync())
             {
-                ContactPoint contactPoint = new ContactPoint()
-                {
-                    ContactType = contactPointType,
-                    ContactValue = contactPointValue
-                };
-                contactPoint.TopicSettings.Add(new ContactPointTopicSetting
-                {
-                    TopicId = topicId,
-                    CultureName = CultureInfo.CurrentCulture.ToString(),
-                    LastSourceSetDate = DateTime.UtcNow,
-                    OriginalSource = "SampleCPMProject",
-                    State = state
-                });
-
                 HttpResponseMessage response = await client.PatchAsync("api/ContactPoints", contactPoint);
                 if (response.IsSuccessStatusCode)
                 {
                     Console.WriteLine(await response.Content.ReadAsStringAsync());
-                    Console.ReadKey();
+                }
+                else
+                {
+                    Console.WriteLine(await response.Content.ReadAsStringAsync());
                 }
             }
         }
