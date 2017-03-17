@@ -51,7 +51,7 @@
                 if (response.IsSuccessStatusCode)
                 {
                     CheckContactabilitiesResult2 result = await response.Content.ReadAsAsync<CheckContactabilitiesResult2>();
-                    Console.WriteLine(JsonConvert.SerializeObject(result));
+                    Console.WriteLine(JsonConvert.SerializeObject(result, Formatting.Indented));
                 }
                 else
                 {
@@ -80,7 +80,7 @@
                 if (response.IsSuccessStatusCode)
                 {
                     LookupContactPoint contactPoint = await response.Content.ReadAsAsync<LookupContactPoint>();
-                    Console.WriteLine(JsonConvert.SerializeObject(contactPoint));
+                    Console.WriteLine(JsonConvert.SerializeObject(contactPoint, Formatting.Indented));
                 } 
                 else
                 {
@@ -117,7 +117,8 @@
                 HttpResponseMessage response = await client.PatchAsync("api/ContactPoints", contactPoint);
                 if (response.IsSuccessStatusCode)
                 {
-                    Console.WriteLine(await response.Content.ReadAsStringAsync());
+                    ContactPoint patched = await response.Content.ReadAsAsync<ContactPoint>();
+                    Console.WriteLine(JsonConvert.SerializeObject(patched, Formatting.Indented));
                 }
                 else
                 {
