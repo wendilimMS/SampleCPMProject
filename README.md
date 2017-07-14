@@ -39,4 +39,4 @@ While access is being granted, you can temporarily unblock your development pipe
 You must use VS2015 or VS2017. We do not support any versions of VS2013.
 
 ### ClientGenerator
-Be aware that we use lazy initialization for the CPMClientGenerator class. Running this sample project will not activate your access permissions on your worker/webjob/etc. You still need to enable your appId to authorize yourself on your end.
+Please be aware that the code in the CPMClientGenerator retrieves the AAD token only once. If the token expires, this class does not retrieve a new token, and the call will simply fail with "unauthorized".
