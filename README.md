@@ -30,8 +30,8 @@ If you keep getting a login screen when trying to add our NuGet feed to Visual S
 
 ### Local installation
 While access is being granted, you can temporarily unblock your development pipeline by retrieving an older version from the [Contact Permissions Master Sharepoint](https://microsoft.sharepoint.com/teams/ContactPermissionsMaster/Shared%20Documents/Technical%20Stuff) and creating a local feed.
-* Unzip the .zip package; you should see 2 .nupkg files.
-* Place both .nupkg files in a folder of your choice.
+* Unzip the .zip package; you should see 1 .nupkg file.
+* Place the .nupkg file in a folder of your choice.
 * Add a new NuGet feed in VS, with the full path of the folder as the source.
 * In the project, open the packages.config file and remove the `Microsoft.Cpm.Api.Contracts` reference.
 * Open the feed and install the packages from there.
