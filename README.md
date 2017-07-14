@@ -23,7 +23,7 @@ Install-Package Microsoft.Cpm.Api.Contracts -Source "https://microsoft.pkgs.visu
 Please note that you will have to locate what the latest version is.
 
 ### Getting access
-If you keep getting a login screen when trying to add our NuGet feed to Visual Studio, it is most likely because your team does not have access to our internal NuGet feed. Please submit an access request through [//wdgaccess](//wdgaccess).
+If you keep getting a login screen when trying to add our NuGet feed to Visual Studio, it is most likely because your team does not have access to our internal NuGet feed. Please submit an access request through [https://aka.ms/wdgaccess](https://aka.ms/wdgaccess).
 
 ### Local installation
 While access is being granted, you can temporarily unblock your development pipeline by retrieving an older version from the [Contact Permissions Master Sharepoint](https://microsoft.sharepoint.com/teams/ContactPermissionsMaster/Shared%20Documents/Technical%20Stuff) and creating a local feed.
