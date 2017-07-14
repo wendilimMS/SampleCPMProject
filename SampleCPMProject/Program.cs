@@ -20,7 +20,7 @@
                 //await GetEmailContactPoint("test@microsoft.com");
                 //await PatchEmailContactPoint("test@microsoft.com", "Mars territory", new Guid("00000000-0000-0000-0000-000000000001"), ContactPointTopicSettingState.OptInExplicit);
                 //await GetPhoneContactabilities("8611111100000", "John", "Doe", new Guid("00000000-0000-0000-0000-000000000002"));
-                //await GetPhoneContactPoint("8611111100000", "John", "Doe");
+                //await GetPhoneContactPoint("8611111100000", "John", "Doe", PhoneContactMatchStrategyType.PrioritizedNameElementFuzzyMatch);
                 //await PatchPhoneContactPoint("+8611111100000", "John", "Williams", "Doe", "Jr", "China", new Guid("00000000-0000-0000-0000-000000000002"), ContactPointTopicSettingState.OptInExplicit);
                 //await GetSmsContactabilities(new List<string> { "8889990000", "1234567890" }, new Guid("00000000-0000-0000-0000-000000000003"));
                 //await GetSmsContactPoint("8889990000");
@@ -78,6 +78,7 @@
                 HttpMethod get = new HttpMethod("GET");
                 HttpRequestMessage request = new HttpRequestMessage(get, "api/EmailContacts");
                 request.Headers.Add("x-ms-filter-email", emailAddress);
+                request.Headers.Add("Accept", "application/json");
                 HttpResponseMessage response = await client.SendAsync(request);
 
                 if (response.IsSuccessStatusCode)
@@ -183,8 +184,9 @@
         /// <param name="phoneNumber">The phone number to check. </param>
         /// <param name="firstName">Optional, First Name. </param>
         /// <param name="lastName">Optional, Last Name".</param>
+        /// <param name="matchStrategy">Optional, Exact match or prioritized name fuzzy match strategy".</param>
         /// <returns></returns>
-        private static async Task GetPhoneContactPoint(string phoneNumber, string firstName, string lastName)
+        private static async Task GetPhoneContactPoint(string phoneNumber, string firstName, string lastName, PhoneContactMatchStrategyType matchStrategy)
         {
             using (HttpClient client = await CPMClientGenerator.CreateHttpClientAsync())
             {
@@ -193,12 +195,14 @@
                 request.Headers.Add("x-ms-filter-phone-number", phoneNumber);
                 request.Headers.Add("x-ms-filter-first-name", firstName);
                 request.Headers.Add("x-ms-filter-last-name", lastName);
+                request.Headers.Add("x-ms-filter-matching-algorithm", matchStrategy.ToString());
+                request.Headers.Add("Accept", "application/json");
                 HttpResponseMessage response = await client.SendAsync(request);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    PhoneContactPoint phoneContactPoint = await response.Content.ReadAsAsync<PhoneContactPoint>();
-                    Console.WriteLine(JsonConvert.SerializeObject(phoneContactPoint, Formatting.Indented));
+                    List<PhoneContactPoint> phoneContactPoints = await response.Content.ReadAsAsync<List<PhoneContactPoint>>();
+                    Console.WriteLine(JsonConvert.SerializeObject(phoneContactPoints, Formatting.Indented));
                 }
                 else
                 {
@@ -252,11 +256,10 @@
             using (HttpClient client = await CPMClientGenerator.CreateHttpClientAsync())
             {
                 HttpResponseMessage response = await client.PatchAsync("api/PhoneContacts", phoneContactPoint);
-                Console.WriteLine(response.StatusCode);
+
                 if (response.IsSuccessStatusCode)
                 {
-                    PhoneContactPoint patched = await response.Content.ReadAsAsync<PhoneContactPoint>();
-                    Console.WriteLine(JsonConvert.SerializeObject(patched));
+                    // By design, we do not return the request body after a successful phone contact point patch
                 }
                 else
                 {
