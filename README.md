@@ -5,6 +5,9 @@ This sample project provides code snipets on how to call the REST api of the CPM
 ## Client Id and Client Secrets
 Please refer to http://aka.ms/cpmapi for instructions on how to retrieve the necessary settings. This project assumes that you already have at least one topic id registered within the CPM system.
 
+## Visual Studio Version
+You must use VS2015 or VS2017. We do not support any previous versions of Visual Studio.
+
 ## NuGet packages
 This sample project utilises a package called `Microsoft.Cpm.Api.Contracts` that is supplied and maintained by our team.
 
@@ -34,9 +37,6 @@ While access is being granted, you can temporarily unblock your development pipe
 * Open the feed and install the packages from there.
 
 **Please note that the packages in the Sharepoint folder are NOT maintained!** Do follow up on your access request ASAP to enjoy the latest NuGet packages.
-
-### Visual Studio Version
-You must use VS2015 or VS2017. We do not support any versions of VS2013.
 
 ### ClientGenerator
 Please be aware that the code in the CPMClientGenerator retrieves the AAD token only once. If the token expires, this class does not retrieve a new token, and the call will simply fail with "unauthorized".
